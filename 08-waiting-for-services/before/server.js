@@ -1,26 +1,41 @@
 const express = require('express')
 const app = express()
-const port = 3000
+const port = process.env.PORT || 3000
 const { MongoClient } = require("mongodb");
 const { MONGO_USER, MONGO_PASSWORD, MONGO_HOST } = process.env;
 
 const uri = `mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_HOST}:27017/`;
 
+const waitOn = require('wait-on');
+
 const client = new MongoClient(uri);
 
+const opts = {
+  resources: [
+    `tcp:${MONGO_HOST}:27017`,
+  ],
+};
 
 (async () => {
-  await client.connect();
-  console.log(`connected`);
+  try {
+    await waitOn(opts);
+    // once here, all resources are available
 
-  app.get('/', async (req, res) => {
-    res.send("Connected To Mongo");
-  })
+    await client.connect();
+    console.log(`connected`);
 
-  app.listen(port, () => {
-    console.log(`Example app listening at http://localhost:${port}`)
-  })
+    app.get('/', async (req, res) => {
+      res.send("Connected To Mongo");
+    })
 
-})();
+    app.listen(port, () => {
+      console.log(`Example app listening at http://localhost:${port}`)
+    })
+  } finally {
+    // Ensures that the client will close when you finish/error
+    await client.close();
+  }
+
+})().catch(console.dir);
 
 
