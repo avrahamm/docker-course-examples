@@ -2,7 +2,7 @@ const express = require('express')
 const app = express()
 const port = process.env.PORT || 3000
 const { MongoClient } = require("mongodb");
-const { MONGO_USER, MONGO_PASSWORD, MONGO_HOST } = process.env;
+const { MONGO_USER, MONGO_PASSWORD, MONGO_HOST, REDIS_HOST } = process.env;
 
 const uri = `mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_HOST}:27017/`;
 
@@ -12,6 +12,7 @@ const client = new MongoClient(uri);
 
 const opts = {
   resources: [
+    `tcp:${REDIS_HOST}:6379`,
     `tcp:${MONGO_HOST}:27017`,
   ],
 };
