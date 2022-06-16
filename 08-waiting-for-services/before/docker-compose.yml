@@ -7,8 +7,10 @@ services:
     command: bash -c "npm install && node server.js"
     volumes:
       - ".:/app"
+    depends_on:
+      - mongo
     ports:
-      - "3000:3000"
+      - "13000:3000"
     environment:
       MONGO_USER: root
       MONGO_PASSWORD: example
@@ -16,7 +18,8 @@ services:
 
   mongo:
     image: mongo:5
-    command: bash -c "sleep 60 && mongod"
+#    removed sleep 60
+    command: bash -c "mongod"
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
